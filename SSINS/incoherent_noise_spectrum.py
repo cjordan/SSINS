@@ -38,11 +38,11 @@ class INS(UVFlag):
 
             # Manually flag autos
             input.data_array[input.ant_1_array == input.ant_2_array] = np.ma.masked
-            self.metric_array = np.abs(input.data_array)
+            self.metric_array = input.data_array
             """The baseline-averaged sky-subtracted visibility amplitudes (numpy masked array)"""
             self.weights_array = np.logical_not(input.data_array.mask)
             """The number of baselines that contributed to each element of the metric_array"""
-            super().to_waterfall(method='mean')
+            super().to_waterfall(method='absmean')
         if not hasattr(self.metric_array, 'mask'):
             self.metric_array = np.ma.masked_array(self.metric_array)
         if mask_file is None:
