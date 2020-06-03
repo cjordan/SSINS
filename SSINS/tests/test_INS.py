@@ -275,3 +275,28 @@ def test_data_params():
     ins = INS(testfile)
 
     assert ins._data_params == ['metric_array', 'weights_array', 'metric_ms', 'sig_array']
+
+
+def test_add():
+    obs = '1061313128_99bl_1pol_half_time_SSINS'
+    testfile = os.path.join(DATA_PATH, '%s.h5' % obs)
+    ins = INS(testfile)
+    other_ins = INS(testfile)
+    other_ins.freq_array += 30.72e6
+
+    # Make a nontrivial mask
+    ins.metric_array.mask[1, 10] = True
+    other_ins.metric_array.mask[1, 12] = True
+
+    # test inplace=False
+    new_ins = ins.__add__(other_ins, inplace=False, axis="frequency")
+    assert np.all(new_ins.metric_array.data == np.concatenate([ins.metric_array.data,
+                                                               other_ins.metric_array.data],
+                                                              axis=1))
+    assert np.all(new_ins.metric_array.mask == np.concatenate([ins.metric_array.mask,
+                                                               other_ins.metric_array.mask],
+                                                              axis=1))
+    # test inplace=True
+    ins.__add__(other_ins, inplace=True, axis="frequency")
+    assert np.all(new_ins.metric_array.data == ins.metric_array.data)
+    assert np.all(new_ins.metric_array.mask == ins.metric_array.mask)
