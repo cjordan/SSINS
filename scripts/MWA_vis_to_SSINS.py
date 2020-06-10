@@ -27,7 +27,7 @@ def calc_occ(ins, num_init_flag, num_int_flag, shape_dict):
 
     for event in ins.match_events:
         if event[2] in ("narrow", "samp_thresh"):
-            occ_dict[event[2]] += 1. / total_valid
+            occ_dict[event[2]] += ins.Npols / total_valid
         else:
             occ_dict[event[2]] += 1. / (ins.metric_array.shape[0] - num_int_flag)
 
