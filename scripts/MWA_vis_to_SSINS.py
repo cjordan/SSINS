@@ -120,7 +120,8 @@ def low_mem_setup(uvd_type, uvf_type, gpu_files, metafits_file, **kwargs):
         print(f"box files for this iteration are {box_files}")
         uvd_obj = uvd_type()
         uvd_obj.read(box_files + metafits_file, times=jd_time_array, **kwargs)
-        uvf_obj.__add__(uvf_type(uvd_obj), axis="frequency", inplace=True)
+        uvf_obj = uvf_type(uvd_obj).__add__(uvf_obj, axis="frequency", inplace=False)
+        assert np.all(uvf_obj.freq_array[1:] > uvf_obj.freq_array[:-1]), "Frequencies are out of order for uvf object."
         print(f"INS nfreqs is {uvf_obj.Nfreqs}")
 
     return(uvf_obj, jd_time_array)
